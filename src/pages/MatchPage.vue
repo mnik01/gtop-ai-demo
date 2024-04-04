@@ -1,26 +1,113 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 defineProps<{ msg: string }>()
 
-const count = ref(0)
+const outputPercentage = ref('');
+const outputDescription = ref('');
+
+const hasOutput = computed(() => outputPercentage.value !== '' && outputDescription.value !== '');
+
+const hasError = ref(false);
+const errorContent = ref('');
+
+const isLoading = ref(false);
+const inputJob = ref('');
+const inputCV = ref('');
+
+const onSubmit = async () => {
+  isLoading.value = true;
+  try {
+    const response = await fetch('https://gtop-ai.mnik01.workers.dev/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input_job: inputJob.value,
+        input_cv: inputCV.value,
+      }),
+    });
+    const data = await response.json();
+    outputPercentage.value = data?.percentage || 'No data';
+    outputDescription.value = data?.description || 'No data';
+  } catch (error) {
+    hasError.value = true;
+    errorContent.value = JSON.stringify(error);
+    console.error(error);
+  } finally {
+    isLoading.value = false;
+  }
+}
+  
+
 </script>
 
 <template>
-  <form action="#">
-    <div>
+  <div class="flex gap-12">
+    <form @submit="onSubmit" class="max-w-md pl-3" action="#">
+    <div class="grid">
       <label for="jobDescription">Job description:</label>
-      <textarea required class="bg-white p-2" id="jobDescription" name="jobDescription" rows="5" cols="33">
-      </textarea>
+      <textarea 
+        required
+        class="bg-white p-2"
+        id="jobDescription"
+        name="jobDescription"
+        rows="5"
+        v-model="inputJob"
+        cols="33" 
+      />
+      <label for="cv">CV:</label>
+      <textarea
+        required
+        class="bg-white
+        p-2"
+        id="cv"
+        v-model="inputCV"
+        name="cv"
+        rows="5"
+        cols="33"
+      />
+    </div>
+    <button
+      class="text-white text-sm w-full py-2 mt-2 uppercase tracking-wide" 
+      type="submit"
+      :class="isLoading ? 'cursor-not-allowed bg-sky-300' : 'cursor-pointer bg-sky-600'"
+    >
+      submit
+    </button>
+  </form>
+  <div>
+    <p class="pb-2">Example</p>
+    Job: <pre>UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma</pre>
+    CV: <pre>Name: Maxim Nikonov, Age: 22, Position: Sr. Web Designer at kandasoftware. Figma Adobe XD 3 years of experience</pre>
+  </div>
+  </div>
+  <div v-if="hasOutput" class="pl-3">
+    <span>output:</span>
+    <div>
+      <span>
+        Matches for: 
+      </span>
+      <p>
+        {{outputPercentage}}%
+      </p>
     </div>
     <div>
-      <label for="cv">CV:</label>
-      <textarea required class="bg-white p-2" id="cv" name="cv" rows="5" cols="33">
-      </textarea>
+      <span>
+        Description: 
+      </span>
+      <p>
+        {{outputDescription}}
+      </p>
     </div>
-    <button type="submit">submit</button>
-  </form>
-  <span>output:</span>
+  </div>
+  <div v-if="hasError" class="pl-3">
+    <span>error:</span>
+    <span>
+      {{errorContent}}
+    </span>
+  </div>
 </template>
 
 <style scoped>

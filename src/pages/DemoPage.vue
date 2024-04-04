@@ -30,15 +30,15 @@ const hasListOfRelatedCVs = ref(true);
         </button>
       </div>
     </div>
-    <div class="px-4 py-2 bg-pink-50">
+    <div class="px-4 py-2 border-l">
       <span>List of related CVs:</span>
       <p v-if="!hasListOfRelatedCVs" class="text-sm text-neutral-600">Submit job description to see list of related CVs or <button class="cursor-pointer underline">see all CVs</button></p>
       <ul v-else class="mt-4">
         <li>
-          CV1
+          Name: Maxim Nikonov, Age: 22, Position: Sr. Web Designer at kandasoftware. Figma Adobe XD 3 years of experience
         </li>
         <li>
-          CV2
+          Name: Maxim Nikonov, Age: 22, Position: Sr. Frontend developer at kandasoftware. React Typescript
         </li>
       </ul>
     </div>
