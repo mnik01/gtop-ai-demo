@@ -45,38 +45,39 @@ const onSubmit = async () => {
 
 <template>
   <div class="flex gap-12">
-    <form @submit="onSubmit" class="max-w-md pl-3" action="#">
-    <div class="grid">
-      <label for="jobDescription">Job description:</label>
-      <textarea 
-        required
-        class="bg-white p-2"
-        id="jobDescription"
-        name="jobDescription"
-        rows="5"
-        v-model="inputJob"
-        cols="33" 
-      />
-      <label for="cv">CV:</label>
-      <textarea
-        required
-        class="bg-white
-        p-2"
-        id="cv"
-        v-model="inputCV"
-        name="cv"
-        rows="5"
-        cols="33"
-      />
-    </div>
-    <button
-      class="text-white text-sm w-full py-2 mt-2 uppercase tracking-wide" 
-      type="submit"
-      :class="isLoading ? 'cursor-not-allowed bg-sky-300' : 'cursor-pointer bg-sky-600'"
-    >
-      submit
+    <div class="max-w-md pl-3">
+      <div class="grid">
+        <label for="jobDescription">Job description:</label>
+        <textarea 
+          required
+          class="bg-white p-2"
+          id="jobDescription"
+          name="jobDescription"
+          rows="5"
+          v-model="inputJob"
+          cols="33" 
+        />
+        <label for="cv">CV:</label>
+        <textarea
+          required
+          class="bg-white
+          p-2"
+          id="cv"
+          v-model="inputCV"
+          name="cv"
+          rows="5"
+          cols="33"
+        />
+      </div>
+      <button
+        class="text-white text-sm w-full py-2 mt-2 uppercase tracking-wide" 
+        type="button"
+        @click="onSubmit"
+        :class="isLoading ? 'cursor-not-allowed bg-sky-300' : 'cursor-pointer bg-sky-600'"
+      >
+        submit
     </button>
-  </form>
+  </div>
   <div>
     <p class="pb-2">Example</p>
     Job: <pre>UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma</pre>
