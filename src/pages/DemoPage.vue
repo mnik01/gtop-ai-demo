@@ -8,7 +8,7 @@ const cvs = ref([
 ]);
 
 const isLoading = ref(false);
-const inputJob = ref('');
+const inputJob = ref(`UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma`);
 
 
 const onSubmit = async () => {
