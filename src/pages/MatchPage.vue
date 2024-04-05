@@ -47,7 +47,7 @@ const onSubmit = async () => {
   <div class="flex gap-12">
     <div class="max-w-md pl-3">
       <div class="grid">
-        <label for="jobDescription">Job description:</label>
+        <label for="jobDescription">Описание вакансии:</label>
         <textarea 
           required
           class="bg-white p-2"
@@ -57,7 +57,7 @@ const onSubmit = async () => {
           v-model="inputJob"
           cols="33" 
         />
-        <label for="cv">CV:</label>
+        <label for="cv">Резюме:</label>
         <textarea
           required
           class="bg-white
@@ -75,20 +75,19 @@ const onSubmit = async () => {
         @click="onSubmit"
         :class="isLoading ? 'cursor-not-allowed bg-sky-300' : 'cursor-pointer bg-sky-600'"
       >
-        submit
+        сравнить
     </button>
   </div>
   <div>
-    <p class="pb-2">Example</p>
+    <p class="pb-2">Пример</p>
     Job: <pre>UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma</pre>
     CV: <pre>Name: Maxim Nikonov, Age: 22, Position: Sr. Web Designer at kandasoftware. Figma Adobe XD 3 years of experience</pre>
   </div>
   </div>
   <div v-if="hasOutput" class="pl-3">
-    <span>output:</span>
     <div>
       <span>
-        Matches for: 
+        Подходит на: 
       </span>
       <p>
         {{outputPercentage}}%
@@ -96,7 +95,7 @@ const onSubmit = async () => {
     </div>
     <div>
       <span>
-        Description: 
+        Объяснение: 
       </span>
       <p>
         {{outputDescription}}
@@ -104,7 +103,7 @@ const onSubmit = async () => {
     </div>
   </div>
   <div v-if="hasError" class="pl-3">
-    <span>error:</span>
+    <span>Ошибка:</span>
     <span>
       {{errorContent}}
     </span>
