@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
-defineProps<{ msg: string }>()
+import { ref, computed } from 'vue';
+import CodeSample from '../components/CodeSample.vue';
 
 const outputPercentage = ref('');
 const outputDescription = ref('');
@@ -15,7 +14,9 @@ const isLoading = ref(false);
 const inputJob = ref('');
 const inputCV = ref('');
 
-const onSubmit = async () => {
+const onSubmit = async (e: { preventDefault: () => void; }) => {
+  e.preventDefault();
+  
   isLoading.value = true;
   try {
     const response = await fetch('https://gtop-ai.mnik01.workers.dev/', {
@@ -33,7 +34,7 @@ const onSubmit = async () => {
     outputDescription.value = data?.description || 'No data';
   } catch (error) {
     hasError.value = true;
-    errorContent.value = JSON.stringify(error);
+    errorContent.value = JSON.stringify(error, Object.getOwnPropertyNames(error))
     console.error(error);
   } finally {
     isLoading.value = false;
@@ -44,13 +45,13 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="flex gap-12">
-    <div class="max-w-md pl-3">
-      <div class="grid">
+  <div class="flex flex-wrap w-screen gap-12">
+    <form @submit="onSubmit" class="max-w-md pl-3">
+      <div class="grid gap-2">
         <label for="jobDescription">Описание вакансии:</label>
         <textarea 
           required
-          class="bg-white p-2"
+          class="bg-white w-full"
           id="jobDescription"
           name="jobDescription"
           rows="5"
@@ -60,8 +61,7 @@ const onSubmit = async () => {
         <label for="cv">Резюме:</label>
         <textarea
           required
-          class="bg-white
-          p-2"
+          class="bg-white w-full"
           id="cv"
           v-model="inputCV"
           name="cv"
@@ -71,18 +71,31 @@ const onSubmit = async () => {
       </div>
       <button
         class="text-white text-sm w-full py-2 mt-2 uppercase tracking-wide" 
-        type="button"
-        @click="onSubmit"
+        type="submit"
         :class="isLoading ? 'cursor-not-allowed bg-sky-300' : 'cursor-pointer bg-sky-600'"
       >
         сравнить
-    </button>
-  </div>
-  <div>
-    <p class="pb-2">Пример</p>
-    Job: <pre>UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma</pre>
-    CV: <pre>Name: Maxim Nikonov, Age: 22, Position: Sr. Web Designer at kandasoftware. Figma Adobe XD 3 years of experience</pre>
-  </div>
+      </button>
+    </form>
+    <section>
+      <p class="pb-2">Пример</p>
+      <code>
+        <span>
+          Job:
+        </span>
+        <code-sample>
+          UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma
+        </code-sample>
+      </code>
+      <code>
+        <span>
+          CV:
+        </span>
+        <code-sample>
+            Name: Maxim Nikonov, Age: 22, Position: Sr. Web Designer at kandasoftware. Figma Adobe XD 3 years of experience
+        </code-sample>
+      </code>
+    </section>
   </div>
   <div v-if="hasOutput" class="pl-3">
     <div>
@@ -110,8 +123,3 @@ const onSubmit = async () => {
   </div>
 </template>
 
-<style scoped>
-.read-the-docs {
-  color: #888;
-}
-</style>
