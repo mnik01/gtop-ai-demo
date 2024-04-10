@@ -19,7 +19,7 @@ const onSubmit = async (e: { preventDefault: () => void; }) => {
   
   isLoading.value = true;
   try {
-    const response = await fetch('https://gtop-ai.mnik01.workers.dev/', {
+    const response = await fetch('https://heavy-hawk-25.deno.dev/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

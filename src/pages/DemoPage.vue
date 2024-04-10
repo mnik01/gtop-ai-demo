@@ -14,19 +14,8 @@ const inputJob = ref(`UX UI Designer at ACME inc. We're looking for UX UI Design
 const onSubmit = async () => {
   isLoading.value = true;
   try {
-    // const response = await fetch('https://gtop-ai.mnik01.workers.dev/', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     input_job: inputJob.value,
-    //     input_cv: inputCV.value,
-    //   }),
-    // });
-    // Send 2 requests to the API in parallel and then set the values of the cvs ref percentage field from the response
     const [response1, response2] = await Promise.all([
-      fetch('https://gtop-ai.mnik01.workers.dev/', {
+      fetch('https://heavy-hawk-25.deno.dev/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +25,7 @@ const onSubmit = async () => {
           input_cv: cvs.value[0].text,
         }),
       }),
-      fetch('https://gtop-ai.mnik01.workers.dev/', {
+      fetch('https://heavy-hawk-25.deno.dev/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
