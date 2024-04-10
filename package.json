@@ -12,7 +12,8 @@
     "@tailwindcss/vite": "4.0.0-alpha.9",
     "tailwindcss": "4.0.0-alpha.9",
     "vue": "^3.4.21",
-    "vue-router": "4"
+    "vue-router": "4",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
