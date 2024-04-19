@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 
 const hasListOfRelatedCVs = ref(true);
-const cvs = ref([
+const cvs = ref<{text:string, description: string | null, percentage: null | string}[]>([
   { text: 'Name: Maxim Nikonov, Age: 22, Position: Sr. Web Designer at kandasoftware. Figma Adobe XD 3 years of experience', percentage: null, description: null },
   { text: 'Name: Nikola Greenberg, Age: 34, Position: Sr. Frontend developer at EPAM. React Typescript', percentage: null, description: null },
   {
@@ -40,59 +40,65 @@ NoSQL, KuberFlow , Spark , Athena , Langchain, LlamaIndex,Vector DB, CI/CD, Devo
     percentage: null, description: null,
   }
 ]);
-
 const error = ref('');
-
 const isLoading = ref(false);
 const inputJob = ref(`UX UI Designer at ACME inc. We're looking for UX UI Designer with 4 years of experience and 2 years of experience with figma`);
-
 const sorting = ref('desc');
-
 const reverseSorting = () => {
   sorting.value = sorting.value === 'asc' ? 'desc' : 'asc';
 }
-
 const cvsHasPercentages = computed(() => cvs.value.every(cv => cv.percentage));
 const cvsSorted = computed(() => {
-  if (!cvsHasPercentages) cvs.value;
-
+  if (!cvsHasPercentages.value) return cvs.value;
   // @ts-expect-error not narrowed
   return cvs.value.sort((a, b) => sorting.value === 'asc' ? a.percentage - b.percentage : b.percentage - a.percentage);
 });
 
+const cache = new Map<string, { percentage: string; description: string }>();
 
 const onSubmit = async () => {
   isLoading.value = true;
   try {
-    const promises  = cvs.value.map(cv => fetch('https://heavy-hawk-25.deno.dev/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        input_job: inputJob.value,
-        input_cv: cv.text,
-      }),
-    }));
+    const promises = cvs.value.map(cv => {
+      const cacheKey = `${inputJob.value}-${cv.text}`;
 
-    const respones = await Promise.all(promises);
+      if (cache.has(cacheKey)) {
+        const cachedData = cache.get(cacheKey);
+        cv.percentage = cachedData?.percentage || 'No data';
+        cv.description = cachedData?.description || 'No data';
+        return new Promise(resolve => setTimeout(resolve, 200));
+      }
 
-    const jsons = await Promise.all(respones.map(res => res.json()));
-    
-    const isValid = jsons.every(json => json?.percentage && json?.description);
-    
-    if (!isValid) {
-      const err = new Error(`Invalid response`);
-      err.message = JSON.stringify(jsons);
-      err.name = 'InvalidResponseError';
-      throw err;
-    }
-
-    jsons.forEach((json, index) => {
-      cvs.value[index].percentage = json?.percentage || 'No data';
-      cvs.value[index].description = json?.description || 'No data';
+      return fetch('https://heavy-hawk-25.deno.dev/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          input_job: inputJob.value,
+          input_cv: cv.text,
+        }),
+      })
+        .then(res => res.json())
+        .then(json => {
+          if (json?.percentage && json?.description) {
+            cv.percentage = json.percentage;
+            cv.description = json.description;
+            cache.set(cacheKey, json);
+          } else {
+            cv.percentage = 'No data';
+            cv.description = 'No data';
+          }
+        })
+        .catch(err => {
+          error.value = JSON.stringify(err);
+          console.error(err);
+          cv.percentage = 'No data';
+          cv.description = 'No data';
+        });
     });
-    
+
+    await Promise.all(promises);
   } catch (err) {
     error.value = JSON.stringify(err);
     console.error(err);
@@ -100,8 +106,8 @@ const onSubmit = async () => {
     isLoading.value = false;
   }
 }
-
 </script>
+
 
 <template>
   <div class="h-screen flex-wrap flex gap-4">

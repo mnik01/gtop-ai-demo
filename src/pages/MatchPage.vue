@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import CodeSample from '../components/CodeSample.vue';
+import { getHash } from '../getHash';
 
 const outputPercentage = ref('');
 const outputDescription = ref('');
@@ -14,11 +15,23 @@ const isLoading = ref(false);
 const inputJob = ref('');
 const inputCV = ref('');
 
+const cache = new Map<string, string>();
+
 const onSubmit = async (e: { preventDefault: () => void; }) => {
   e.preventDefault();
   
+  const cacheKey = `${getHash(inputJob.value)}-${getHash(inputCV.value)}`;
+  
   isLoading.value = true;
   try {
+    if (cache.has(cacheKey)) {
+      const resp = JSON.parse(cache.get(cacheKey)!);
+      outputPercentage.value = resp.percentage;
+      outputDescription.value = resp.description;
+      
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      return;
+    }
     const response = await fetch('https://heavy-hawk-25.deno.dev/', {
       method: 'POST',
       headers: {
@@ -32,6 +45,8 @@ const onSubmit = async (e: { preventDefault: () => void; }) => {
     const data = await response.json();
     outputPercentage.value = data?.percentage || 'No data';
     outputDescription.value = data?.description || 'No data';
+
+    cache.set(cacheKey, JSON.stringify(data));
   } catch (error) {
     hasError.value = true;
     errorContent.value = JSON.stringify(error, Object.getOwnPropertyNames(error))
